@@ -1,4 +1,5 @@
 import React from "react";
+import { v4 as uuidv4 } from 'uuid';
 import Post from "../Post/Post";
 
 export default function PostList () {
@@ -24,6 +25,11 @@ export default function PostList () {
         setPosts(newPostList)
     }
 
+    const handleEditedPost = (postToBeEdited) => {
+        const newPostList = posts.map(post => post.id === postToBeEdited.id ? postToBeEdited : post)
+        setPosts(newPostList)
+    }
+
     const handleChange = (event) => {
         // Event is what is happening (onClick, onChange etc)
         // Target is the element in which this event is happening
@@ -40,12 +46,24 @@ export default function PostList () {
 
     }
 
+    function createNewTodo(event) {
+        event.preventDefault();
+        const newPostWithId = { ...newPost, id: uuidv4() }
+        setPosts([newPostWithId ,...posts])
+        setNewPost({
+            userId: 1,
+            title: '',
+            body: ''
+        })
+    }
+
     return (
         <div>
             <h1>PostList</h1>
-            <form>
-                <input type="text" placeholder="title" name="title" onChange={handleChange} />
-                <input type="text" placeholder="body" name="body" onChange={handleChange} />
+            <form onSubmit={createNewTodo}>
+                <input type="text" value={newPost.title} placeholder="title" name="title" onChange={handleChange} />
+                <input type="text"  value={newPost.body} placeholder="body" name="body" onChange={handleChange} />
+                <button type='submit'>Create todo</button>
             </form>
             {posts.map(post =>  
             <Post
@@ -55,6 +73,7 @@ export default function PostList () {
                 title={post.title} 
                 body={post.body}
                 deletePost={deletePost}
+                handleEditedPost={handleEditedPost}
             />
             )}
             
